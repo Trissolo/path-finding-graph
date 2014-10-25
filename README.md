@@ -3,8 +3,12 @@ path-finding-graph
 
 This graph generates an object with all possible paths between two nodes and outputs the shortest path.
 
-To do this it uses a path object that has an extend method. If we intialize a path in a hypothetical graph at node 0, it might look like this:
+To do this it uses a path object that has an extend method. First, lets intialize a path in a hypothetical graph at node 0.
 ```javascript
+var node = graph.getNode(0);
+var path = new Path(node);
+
+//our path now looks like this:
 { 
   length: 0,
   node: 0,
@@ -14,8 +18,18 @@ To do this it uses a path object that has an extend method. If we intialize a pa
 }
 
 ```
-Notice how the edges of that node were stored in the "outgoing" array of the path. That means we can iterate over those edges and use them to extend our path. After calling extend on our initial path with each item in the outgoing array, we have this:
+Notice how the edges of that node were stored in the "outgoing" array of the path. That means we can iterate over those edges and use them to extend our path:
 ```javascript
+for(var i = 0; i < path.outgoing.length; i++){
+  // for each edge item in the outgoing array
+  var edge = path.outgoing[i];
+  // we get the node that the edge points to
+  var target = graph.getNode(edge.id);
+  // then we extend our path using the edge and the target node
+  path.extend(edge, target);
+}
+
+// now our path looks like this:
 { 
   length: 0,
   node: 0,
@@ -34,6 +48,6 @@ Notice how the edges of that node were stored in the "outgoing" array of the pat
        paths: [ ] } ] 
 }
 ```
-Each new path in the paths array thusly generated has a length equal to the length of the entire path starting from the originating node and ending at the position of that path. They also have an array of locations visited in that path. We can now iterate over the outgoing edges in each new path object to populate their respective paths arrays and get every possible next step from these points, thus generating all possible paths from the origin at node 0.
+Each new path in the paths array of our original path has a length equal to the length of the entire path starting from the originating node and ending at the target node of that path. They also have an array of locations visited in that path. We can now iterate over the outgoing edges in each new path object to populate their respective paths arrays and get every next step from these points and so on, eventually generating all possible paths from the origin at node 0.
 
-This makes a shortest path algorithm extremely easy: generate all possible paths from start node. Every time a path reaches the end node save that path if it has a shorter length than the previously saved path to that node.
+This makes a shortest path algorithm extremely easy: recursively generate all possible paths from start node. Every time we extend our path, we check to see if the end point of that path is our target node (i.e. the one we are finding a shortest path to). If it is, we save that path if it is the first one we found, or if we already found one path to the target we overwrite it if this new path is shorter than the last one.
