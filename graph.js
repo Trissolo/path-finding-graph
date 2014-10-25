@@ -43,20 +43,18 @@ Graph.prototype.findPath = function(start, end){
     for(var i = 0; i < path.outgoing.length; i++){
       // for each edge going out from this node
       var edge = path.outgoing[i];
-      // we only make a new path if the edge has not yet been visited
-      if(path.locations.indexOf(edge.id) === -1){
-        // we get the node that this is an edge to
-        var target = self.getNode(edge.id);
-        // we create a new path extending off of this one and save a refernce to it
-        var newPath = path.extend(edge, target);
-        if(target.id === end){
-          // if our new path is a path to our endpoint...
-          if(!shortestPath || newPath.length < shortestPath.length)
-            // and that path is the first or is shorter than a previously saved one
-          shortestPath = newPath;
-        } else {
-          makePaths(newPath);
-        }
+      // we get the node that this is an edge to
+      var target = self.getNode(edge.id);
+      // we create a new path extending off of this one and save a refernce to it
+      var newPath = path.extend(edge, target);
+      if(target.id === end){
+        // if our new path is a path to our endpoint...
+        if(!shortestPath || newPath.length < shortestPath.length)
+          // and that path is the first or is shorter than a previously saved one
+        shortestPath = newPath;
+      } 
+      else if(newPath){
+        makePaths(newPath);
       }
     }
   }
@@ -79,6 +77,10 @@ var Path = function(node, locations, distance){
 }
 
 Path.prototype.extend = function(edge, node){
+  // fails if edge is pointing to an already visited node
+  if(this.locations.indexOf(edge.id) !== -1){
+    return false;
+  }
   // when we extend we add the edge length to the existing path length
   var length = this.length + edge.value;
   // and pass in a copy of the locations visited in the current path
