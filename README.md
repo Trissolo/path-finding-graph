@@ -50,4 +50,29 @@ for(var i = 0; i < path.outgoing.length; i++){
 ```
 Each new path in the paths array of our original path has a length equal to the length of the entire path starting from the originating node and ending at the target node of that path. They also have an array of locations visited in that path. We can now iterate over the outgoing edges in each new path object to populate their respective paths arrays and get every next step from these points and so on, eventually generating all possible paths from the origin at node 0.
 
-This makes a shortest path algorithm extremely easy: recursively generate all possible paths from start node. Every time we extend our path, we check to see if the end point of that path is our target node (i.e. the one we are finding a shortest path to). If it is, we save that path if it is the first one we found, or if we already found one path to the target we overwrite it if this new path is shorter than the last one.
+This makes a shortest path algorithm extremely easy, here is the code for shortest path:
+```javascript
+Graph.prototype.findPath = function(start, end){
+  var self = this;
+  var shortestPath;
+  var startNode = this.getNode(start);
+  var endNode = this.getNode(end);
+  var path = new Path(startNode);
+  var makePaths = function(path){
+    for(var i = 0; i < path.outgoing.length; i++){
+      var edge = path.outgoing[i];
+      var target = self.getNode(edge.id);
+      var newPath = path.extend(edge, target);
+      if(target.id === end){
+        if(!shortestPath || newPath.length < shortestPath.length)
+        shortestPath = newPath;
+      } 
+      else if(newPath){
+        makePaths(newPath);
+      }
+    }
+  }
+  makePaths(path);
+  return shortestPath;
+}
+```
