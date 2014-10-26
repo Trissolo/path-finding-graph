@@ -1,9 +1,9 @@
 path-finding-graph
 ==================
 
-This graph generates an object with all possible paths between two nodes and outputs the shortest path.
+This graph generates a paths object that contains all possible paths extending out from a given node. The paths automatically end when they reach a dead end, or there are no un-traversed nodes connected to the current node, for example at the end of a loop. This makes it very convenient to find the shortest path between two nodes.
 
-To do this it uses a path object that has an extend method. First, lets intialize a path in a hypothetical graph at node 0.
+To create the paths object this graph uses a Path constructor that has an "extend" method. First, lets intialize a path in a hypothetical graph at node 0.
 ```javascript
 var node = graph.getNode(0);
 var path = new Path(node);
